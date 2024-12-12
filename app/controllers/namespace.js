@@ -13,7 +13,7 @@ exports.getAll = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const { title, href } = req.body;
-        console.log(title, href)
+
         if (!title || !href) {
             return res.status(400).json({ message: "Title and href are required." });
         }

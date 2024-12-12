@@ -19,7 +19,7 @@ const roomSchema = new mongoose.Schema({        // telegram channel, group or PV
         type: String,
         required: true
     },
-    title: String,
+    image: String,
     messages: {
         type: [messageSchema],
         default: []
@@ -45,8 +45,8 @@ const namespaceSchema = new mongoose.Schema({   // telegram folder model
     timestamps: true
 });
 
-const messageModel = new mongoose.model("Message", roomSchema);
-const roomModel = new mongoose.model("Room", roomSchema);
-const namespaceModel = new mongoose.model("Namespace", roomSchema);
+// const messageModel = new mongoose.model("Message", messageSchema);
+// const roomModel = new mongoose.model("Room", roomSchema);
+const namespaceModel = new mongoose.model("Namespace", namespaceSchema);
 
 module.exports = namespaceModel;
