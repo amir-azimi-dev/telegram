@@ -17,10 +17,11 @@ exports.create = async (req, res, next) => {
             return res.status(409).json({ message: "Room already exists." });
         }
 
-        const roomData = {
-            title,
-            image: "not handled yet"
-        };
+        let roomData = { title };
+        if (req.file?.filename) {
+            const filename = `rooms/${req.file.filename}`;
+            roomData = { ...roomData, image: filename };
+        }
 
         await namespaceModel.updateOne({ href: namespace }, {
             $push: { rooms: roomData }
