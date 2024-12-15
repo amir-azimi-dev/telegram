@@ -5,7 +5,7 @@ window.addEventListener("load", () => {
 
   socket.on("connect", () => {
     socket.on("namespaces", namespaces => {
-      showNamespaces(namespaces);
+      showNamespaces(namespaces, socket);
       showActiveNamespace(namespaces);
     });
   });

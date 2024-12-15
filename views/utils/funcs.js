@@ -1,4 +1,9 @@
-export const showNamespaces = (namespaces) => {
+let socket = null;
+let namespaceSocket = null;
+
+export const showNamespaces = (namespaces, socketIO) => {
+  socket = socketIO;
+
   const chatCategories = document.querySelector(".sidebar__categories-list");
   chatCategories.innerHTML = "";
 
@@ -6,10 +11,8 @@ export const showNamespaces = (namespaces) => {
     chatCategories.insertAdjacentHTML(
       "beforeend",
       `
-              <li data-title="${
-                namespace.title
-              }" class="sidebar__categories-item ${
-        index === 0 && "sidebar__categories-item--active"
+              <li data-title="${namespace.title
+      }" class="sidebar__categories-item ${index === 0 && "sidebar__categories-item--active"
       }" data-category-name="all">
                 <span class="sidebar__categories-text">${namespace.title}</span>
                 <!-- <span class="sidebar__categories-counter sidebar__counter">3</span> -->
@@ -20,6 +23,8 @@ export const showNamespaces = (namespaces) => {
 };
 
 export const showActiveNamespace = (namespaces) => {
+  getNamespaceChats(namespaces[0].href);
+
   let sidebarCategoriesItem = document.querySelectorAll(
     ".sidebar__categories-item"
   );
@@ -55,7 +60,8 @@ export const showActiveNamespace = (namespaces) => {
 };
 
 export const getNamespaceChats = (namespaceHref) => {
-  const namespaceSocket = io(`http://localhost:3000${namespaceHref}`);
+  namespaceSocket && namespaceSocket.close();
+  namespaceSocket = io(`http://localhost:3000${namespaceHref}`);
 
   namespaceSocket.on("connect", () => {
     namespaceSocket.on("namespaceRooms", (rooms) => {
@@ -72,7 +78,7 @@ export const showNamespaceChats = (rooms) => {
     chats.insertAdjacentHTML(
       "beforeend",
       `
-          <li class="sidebar__contact-item">
+          <li class="sidebar__contact-item" data-room="${room.title}">
             <a class="sidebar__contact-link" href="#">
               <div class="sidebar__contact-left">
                 <div class="sidebar__contact-left-left">
@@ -95,5 +101,43 @@ export const showNamespaceChats = (rooms) => {
           </li>
       `
     );
+  });
+
+  setClickOnChats();
+};
+
+const setClickOnChats = () => {
+  const chats = document.querySelectorAll(".sidebar__contact-item");
+
+  chats.forEach((chat) => {
+    chat.addEventListener("click", () => {
+      const roomName = chat.dataset.room;
+      namespaceSocket.emit("join", roomName);
+
+      namespaceSocket.on("room-info", (roomInfo) => {
+        const chatHeader = document.querySelector(".chat__header");
+        chatHeader.classList.add("chat__header--active");
+
+        const chatContent = document.querySelector(".chat__content");
+        chatContent.classList.add("chat__content--active");
+
+        const chatName = document.querySelector(".chat__header-name");
+        chatName.innerHTML = roomInfo.title;
+
+        const chatAvatar = document.querySelector(".chat__header-avatar");
+        chatAvatar.src = `http://localhost:3000/uploads/${roomInfo.image || "rooms/default.png"}`;
+      });
+
+      getAndShowRoomOnlineUsers();
+    });
+  });
+};
+
+const getAndShowRoomOnlineUsers = () => {
+  namespaceSocket.on("onlineUsersCount", (count) => {
+    const chatOnlineUsersCount = document.querySelector(".chat__header-status");
+    chatOnlineUsersCount.innerHTML = `${count} Users are online`;
+
+    console.log("onlineUsersCount ->", count);
   });
 };
