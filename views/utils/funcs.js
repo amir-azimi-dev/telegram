@@ -55,6 +55,12 @@ export const showActiveNamespace = (namespaces) => {
       );
       selectedCategoryActive.classList.remove("sidebar__contact--active");
       selectedCategory.classList.add("sidebar__contact--active");
+
+      const chatHeader = document.querySelector(".chat__header");
+        chatHeader.classList.remove("chat__header--active");
+
+        const chatContent = document.querySelector(".chat__content");
+        chatContent.classList.remove("chat__content--active");
     });
   });
 };
@@ -134,10 +140,8 @@ const setClickOnChats = () => {
 };
 
 const getAndShowRoomOnlineUsers = () => {
-  namespaceSocket.on("onlineUsersCount", (count) => {
+  namespaceSocket.on("online-user-count", count => {
     const chatOnlineUsersCount = document.querySelector(".chat__header-status");
     chatOnlineUsersCount.innerHTML = `${count} Users are online`;
-
-    console.log("onlineUsersCount ->", count);
   });
 };

@@ -8,7 +8,7 @@ const initiateConnection = io => {
 };
 
 const getNamespaceRooms = async io => {
-    const namespaces = await namespaceModel.find().sort({ createdAt: -1 });    
+    const namespaces = await namespaceModel.find().sort({ createdAt: -1 });
     namespaces.forEach(async namespace => {
         namespace = await namespaceModel.findById(namespace.id);
 
@@ -17,16 +17,45 @@ const getNamespaceRooms = async io => {
 
             client.on("join", async roomTitle => {
                 const userLastRoom = Array.from(client.rooms)[1];
-                userLastRoom && client.leave(userLastRoom);
-                const targetRooms = namespace.rooms;
-                const targetRoomData = targetRooms.find(room => room.title === roomTitle);
+                if (userLastRoom) {
+                    const leftRoomNamespace = await getRoomNamespace(userLastRoom);
+                    client.leave(userLastRoom);
+                    await sendOnlineUserCountOfRoom(io, leftRoomNamespace.href, userLastRoom);
+                }
 
                 client.join(roomTitle);
+                await sendOnlineUserCountOfRoom(io, namespace.href, roomTitle);
+
+                const targetRooms = namespace.rooms;
+                const targetRoomData = targetRooms.find(room => room.title === roomTitle);
                 client.emit("room-info", targetRoomData);
+
+                client.on("disconnect", async client => {
+                    await sendOnlineUserCountOfRoom(io, namespace.href, roomTitle);
+                });
             });
         });
     });
 };
+
+const sendOnlineUserCountOfRoom = async (io, namespaceHref, roomTitle) => {
+    const roomOnlineUserIds = await io
+        .of(namespaceHref)
+        .in(roomTitle)
+        .allSockets();
+
+    const onlineUserCount = roomOnlineUserIds.size;
+
+    io
+        .of(namespaceHref)
+        .in(roomTitle)
+        .emit("online-user-count", onlineUserCount);
+};
+
+const getRoomNamespace = async roomTitle => {
+    const targetNamespace = await namespaceModel.findOne({ "rooms.title": roomTitle });
+    return targetNamespace;
+}
 
 module.exports = {
     initiateConnection,
