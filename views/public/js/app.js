@@ -1,4 +1,4 @@
-import { showActiveNamespace, showNamespaces } from "../../utils/funcs.js";
+import { showActiveNamespace, showNamespaces, sendMessageHandler } from "../../utils/funcs.js";
 
 window.addEventListener("load", () => {
   const socket = io("http://localhost:3000");
@@ -7,6 +7,7 @@ window.addEventListener("load", () => {
     socket.on("namespaces", namespaces => {
       showNamespaces(namespaces, socket);
       showActiveNamespace(namespaces);
+      sendMessageHandler();
     });
   });
 });

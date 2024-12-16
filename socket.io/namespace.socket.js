@@ -30,9 +30,17 @@ const getNamespaceRooms = async io => {
                 const targetRoomData = targetRooms.find(room => room.title === roomTitle);
                 client.emit("room-info", targetRoomData);
 
-                client.on("disconnect", async client => {
+                client.on("disconnect", async () => {
                     await sendOnlineUserCountOfRoom(io, namespace.href, roomTitle);
                 });
+            });
+
+            client.on("send-message", async ({ message, roomTitle }) => {
+                if (!message || !roomTitle) {
+                    return;
+                }
+
+                await sendMessageHandler(message, roomTitle);
             });
         });
     });
@@ -55,7 +63,15 @@ const sendOnlineUserCountOfRoom = async (io, namespaceHref, roomTitle) => {
 const getRoomNamespace = async roomTitle => {
     const targetNamespace = await namespaceModel.findOne({ "rooms.title": roomTitle });
     return targetNamespace;
-}
+};
+
+const sendMessageHandler = async (message, roomTitle) => {
+    await namespaceModel.updateOne({ "rooms.title": roomTitle }, {
+        $push: { "rooms.$.messages": { message } }
+    });
+
+    // console.log(targetRoomData)
+};
 
 module.exports = {
     initiateConnection,

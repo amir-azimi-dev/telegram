@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register / Login</title>
+  <link rel="stylesheet" href="./public/css/register.css" />
+</head>
+
+<body>
+  <form class="box">
+    <h1>Auth</h1>
+    <input type="text" name="name" id="username" placeholder="Username" autocomplete="off" />
+    <input type="text" name="phone" id="phone" placeholder="Phone" autocomplete="off" />
+    <input type="submit" id="submit" value="Register / Login" />
+  </form>
+
+  <script>
+    const $ = document;
+    const usernameInput = $.querySelector("#username");
+    const phoneInput = $.querySelector("#phone");
+    const formElement = $.querySelector("form");
+
+    formElement.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const user = {
+        name: usernameInput.value,
+        phone: phoneInput.value,
+      };
+
+      const res = await fetch("http://localhost:3000/api/v1/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        formElement.reset();
+      }
+    });
+  </script>
+</body>
+
+</html>
