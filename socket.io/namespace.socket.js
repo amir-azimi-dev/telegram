@@ -44,6 +44,18 @@ const getNamespaceRooms = async io => {
                 await sendMessageHandler(message, roomTitle, senderId);
                 io.of(namespace.href).in(roomTitle).emit("room-message", { message, roomTitle, sender: senderId });
             });
+
+            client.on("typing", async ({ roomTitle, user, isTyping }) => {
+                console.log(roomTitle, user)
+                if (!roomTitle || !user.name) {
+                    return;
+                }
+
+                io.of(namespace.href).in(roomTitle).emit("typing-status", { user, isTyping });
+                if (!isTyping) {
+                    await sendOnlineUserCountOfRoom(io, namespace.href, roomTitle);
+                }
+            });
         });
     });
 };

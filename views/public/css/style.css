@@ -791,6 +791,10 @@
   background-color: var(--primary-color);
 }
 
+.location-icon {
+  margin-right: 3rem;
+}
+
 @media screen and (max-width: 1400px) {
   .chat {
     padding: 7.1rem 3rem 8rem;

@@ -225,3 +225,29 @@ export const getMessage = () => {
     chatsContent.scrollTo(0, chatsContent.scrollHeight);
   });
 }
+
+export const detectIsTyping = () => {
+  const chatInput = document.querySelector(".chat__content-bottom-bar-input");
+  const chatStatusElement = document.querySelector(".chat__header-status");
+
+  chatInput.addEventListener("keydown", event => {
+    if (!event.currentTarget.value) {
+      return;
+    }
+
+    namespaceSocket.emit("typing", { roomTitle: activeRoomTitle, user, isTyping: true });
+
+    setTimeout(() => {
+      namespaceSocket.emit("typing", { roomTitle: activeRoomTitle, user, isTyping: false });
+
+    }, 2000);
+  });
+
+  namespaceSocket.on("typing-status", data => {
+    if (data.user._id === user._id || !data.isTyping) {
+      return;
+    }
+
+    chatStatusElement.innerHTML = `${data.user.name} is typing ...`;
+  })
+}

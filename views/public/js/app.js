@@ -3,7 +3,8 @@ import {
   showActiveNamespace,
   showNamespaces,
   sendMessageHandler,
-  getMessage
+  getMessage,
+  detectIsTyping
 } from "../../utils/funcs.js";
 
 window.addEventListener("load", async () => {
@@ -22,6 +23,7 @@ window.addEventListener("load", async () => {
       showActiveNamespace(namespaces);
       sendMessageHandler();
       getMessage();
+      detectIsTyping();
     });
 
   });
@@ -46,3 +48,13 @@ const getUserInfo = async () => {
   const data = await response.json();
   return data.payload;
 };
+
+const scrollDownButton = document.querySelector(".chat__content-bottom-bar-right>span");
+scrollDownButton.addEventListener("click", () => {
+  const chatsContent = document.querySelector(".chat__content--active");
+  chatsContent.scrollTo({
+    behavior: "smooth",
+    left: 0,
+    top: chatsContent.scrollHeight
+  });
+});
