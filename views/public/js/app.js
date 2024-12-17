@@ -4,7 +4,9 @@ import {
   showNamespaces,
   sendMessageHandler,
   getMessage,
-  detectIsTyping
+  detectIsTyping,
+  sendLocation,
+  getLocation
 } from "../../utils/funcs.js";
 
 window.addEventListener("load", async () => {
@@ -24,6 +26,8 @@ window.addEventListener("load", async () => {
       sendMessageHandler();
       getMessage();
       detectIsTyping();
+      sendLocation();
+      getLocation();
     });
 
   });

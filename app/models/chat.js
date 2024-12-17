@@ -1,5 +1,23 @@
 const mongoose = require("mongoose");
 
+const locationSchema = new mongoose.Schema({
+    sender: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    longitude: {
+        type: Number,
+        required: true
+    },
+    latitude: {
+        type: Number,
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
 const messageSchema = new mongoose.Schema({
     sender: {
         type: mongoose.Types.ObjectId,
@@ -22,6 +40,10 @@ const roomSchema = new mongoose.Schema({        // telegram channel, group or PV
     image: String,
     messages: {
         type: [messageSchema],
+        default: []
+    },
+    locations: {
+        type: [locationSchema],
         default: []
     }
 }, {
