@@ -42,7 +42,7 @@
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem("token", data.token);
-        formElement.reset();
+        location.replace("./index.html");
       }
     });
   </script>

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const namespaceModel = require("../app/models/chat");
 
 const initiateConnection = io => {
@@ -9,13 +10,13 @@ const initiateConnection = io => {
 
 const getNamespaceRooms = async io => {
     const namespaces = await namespaceModel.find().sort({ createdAt: -1 });
-    namespaces.forEach(async namespace => {
-        namespace = await namespaceModel.findById(namespace.id);
-
-        io.of(namespace.href).on("connection", client => {
+    namespaces.forEach(namespace => {
+        io.of(namespace.href).on("connection", async client => {
+            namespace = await namespaceModel.findById(namespace.id);
             client.emit("namespaceRooms", namespace.rooms);
 
             client.on("join", async roomTitle => {
+                namespace = await namespaceModel.findById(namespace.id);
                 const userLastRoom = Array.from(client.rooms)[1];
                 if (userLastRoom) {
                     const leftRoomNamespace = await getRoomNamespace(userLastRoom);
@@ -35,12 +36,13 @@ const getNamespaceRooms = async io => {
                 });
             });
 
-            client.on("send-message", async ({ message, roomTitle }) => {
-                if (!message || !roomTitle) {
+            client.on("send-message", async ({ message, roomTitle, senderId }) => {
+                if (!message || !roomTitle || !mongoose.isValidObjectId(senderId)) {
                     return;
                 }
 
-                await sendMessageHandler(message, roomTitle);
+                await sendMessageHandler(message, roomTitle, senderId);
+                io.of(namespace.href).in(roomTitle).emit("room-message", { message, roomTitle, sender: senderId });
             });
         });
     });
@@ -65,12 +67,12 @@ const getRoomNamespace = async roomTitle => {
     return targetNamespace;
 };
 
-const sendMessageHandler = async (message, roomTitle) => {
-    await namespaceModel.updateOne({ "rooms.title": roomTitle }, {
-        $push: { "rooms.$.messages": { message } }
-    });
+const sendMessageHandler = async (message, roomTitle, senderId) => {
+    const messageData = { message, sender: senderId };
 
-    // console.log(targetRoomData)
+    await namespaceModel.updateOne({ "rooms.title": roomTitle }, {
+        $push: { "rooms.$.messages": messageData }
+    });
 };
 
 module.exports = {

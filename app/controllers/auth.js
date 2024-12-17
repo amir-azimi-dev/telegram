@@ -31,16 +31,22 @@ exports.authenticate = async (req, res, next) => {
 
         const targetUser = await userModel.findOne({ phone });
         if (targetUser) {
-            return res.status(409).json({ message: "User already exists." });
+            const token = getUserToken(targetUser._id);
+            return res.json({ success: true, message: "You logged in successfully.", token });
         }
 
         const userData = { name, phone };
         const user = await userModel.create(userData);
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: "10d" });
+        const token = getUserToken(user._id);
 
-        return res.status(201).json({ success: true, message: "user created successfully.", token });
+        return res.status(201).json({ success: true, message: "User created successfully.", token });
 
     } catch (error) {
         next(error);
     }
+};
+
+const getUserToken = userId => {
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY, { expiresIn: "10d" });
+    return token;
 };

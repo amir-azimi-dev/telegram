@@ -1,6 +1,11 @@
+let user = null;
 let socket = null;
 let namespaceSocket = null;
 let activeRoomTitle = null;
+
+export const authorizeUser = userInfo => {
+  user = userInfo;
+}
 
 export const showNamespaces = (namespaces, socketIO) => {
   socket = socketIO;
@@ -122,7 +127,7 @@ const setClickOnChats = () => {
       activeRoomTitle = roomName;
       namespaceSocket.emit("join", roomName);
 
-      namespaceSocket.on("room-info", (roomInfo) => {
+      namespaceSocket.on("room-info", roomInfo => {
         const chatHeader = document.querySelector(".chat__header");
         chatHeader.classList.add("chat__header--active");
 
@@ -134,6 +139,33 @@ const setClickOnChats = () => {
 
         const chatAvatar = document.querySelector(".chat__header-avatar");
         chatAvatar.src = `http://localhost:3000/uploads/${roomInfo.image || "rooms/default.png"}`;
+
+        const chatsContainer = document.querySelector(".chat__content-main");
+        chatsContainer.innerHTML = "";
+
+        roomInfo.messages?.forEach(message => {
+          let messageTemplate = null;
+          if (message.sender === user._id) {
+            messageTemplate = `
+                <div class="chat__content-receiver-wrapper chat__content-wrapper">
+                  <div class="chat__content-receiver">
+                    <span class="chat__content-receiver-text">${message.message}</span>
+                    <span class="chat__content-chat-clock">17:55</span>
+                  </div>
+                </div>
+            `
+          } else {
+            messageTemplate = `
+                <div class="chat__content-sender-wrapper chat__content-wrapper">
+                  <div class="chat__content-sender">
+                    <span class="chat__content-receiver-text">${message.message}</span>
+                    <span class="chat__content-chat-clock">17:55</span>
+                  </div>
+                </div>
+            `
+          }
+          chatsContainer.insertAdjacentHTML("beforeend", messageTemplate)
+        });
       });
 
       getAndShowRoomOnlineUsers();
@@ -150,32 +182,46 @@ const getAndShowRoomOnlineUsers = () => {
 
 export const sendMessageHandler = () => {
   const msgInput = document.querySelector(".chat__content-bottom-bar-input");
-  const chatsContainer = document.querySelector(".chat__content-main");
 
   msgInput.addEventListener("keyup", event => {
-    const chatsContent = document.querySelector(".chat__content--active");
-
     if (event.key === "Enter") {
       const message = event.target.value.trim();
       if (!message) {
         return;
       }
 
-      namespaceSocket.emit("send-message", { message, roomTitle: activeRoomTitle });
+      namespaceSocket.emit("send-message", { message, roomTitle: activeRoomTitle, senderId: user._id });
       event.target.value = "";
-      chatsContainer.insertAdjacentHTML(
-        "beforeend",
-        `
-              <div class="chat__content-receiver-wrapper chat__content-wrapper">
-                <div class="chat__content-receiver">
-                  <span class="chat__content-receiver-text">${message}</span>
-                  <span class="chat__content-chat-clock">17:55</span>
-                </div>
-              </div>
-          `
-      );
-
-      chatsContent.scrollTo(0, chatsContent.scrollHeight);
     }
   });
 };
+
+export const getMessage = () => {
+  namespaceSocket.on("room-message", message => {
+    const chatsContainer = document.querySelector(".chat__content-main");
+    const chatsContent = document.querySelector(".chat__content--active");
+
+    let messageTemplate = null;
+    if (message.sender === user._id) {
+      messageTemplate = `
+                <div class="chat__content-receiver-wrapper chat__content-wrapper">
+                  <div class="chat__content-receiver">
+                    <span class="chat__content-receiver-text">${message.message}</span>
+                    <span class="chat__content-chat-clock">17:55</span>
+                  </div>
+                </div>
+            `
+    } else {
+      messageTemplate = `
+                <div class="chat__content-sender-wrapper chat__content-wrapper">
+                  <div class="chat__content-sender">
+                    <span class="chat__content-receiver-text">${message.message}</span>
+                    <span class="chat__content-chat-clock">17:55</span>
+                  </div>
+                </div>
+            `
+    }
+    chatsContainer.insertAdjacentHTML("beforeend", messageTemplate);
+    chatsContent.scrollTo(0, chatsContent.scrollHeight);
+  });
+}
