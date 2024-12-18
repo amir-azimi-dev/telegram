@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+
+const mediaSchema = new mongoose.Schema({
+    sender: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    path: {
+        type: String,
+        required: true
+    }
+}, {
+    timestamps: true
+});
+
 const locationSchema = new mongoose.Schema({
     sender: {
         type: mongoose.Types.ObjectId,
@@ -45,7 +60,12 @@ const roomSchema = new mongoose.Schema({        // telegram channel, group or PV
     locations: {
         type: [locationSchema],
         default: []
+    },
+    medias: {
+        type: [mediaSchema],
+        default: []
     }
+    
 }, {
     timestamps: true
 });
@@ -67,8 +87,6 @@ const namespaceSchema = new mongoose.Schema({   // telegram folder model
     timestamps: true
 });
 
-// const messageModel = new mongoose.model("Message", messageSchema);
-// const roomModel = new mongoose.model("Room", roomSchema);
 const namespaceModel = new mongoose.model("Namespace", namespaceSchema);
 
 module.exports = namespaceModel;

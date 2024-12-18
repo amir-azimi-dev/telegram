@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const namespaceModel = require("../app/models/chat");
+const { uploadFile } = require("../utils/fs");
 
 const initiateConnection = io => {
     io.on("connection", async client => {
@@ -59,6 +60,18 @@ const getNamespaceRooms = async io => {
                 io.of(namespace.href).in(roomTitle).emit("room-location", { location, roomTitle, sender: senderId });
             });
 
+            client.on("send-media", async ({ file, filename, roomTitle, senderId }) => {
+                if (!file || !filename || !roomTitle || !mongoose.isValidObjectId(senderId)) {
+                    return;
+                }
+
+                const uploadedMediaName = await sendFileHandler(file, filename, roomTitle, senderId);
+                if (!uploadedMediaName) {
+                    return;
+                }
+                io.of(namespace.href).in(roomTitle).emit("room-media", { filename: uploadedMediaName, senderId });
+            });
+
             client.on("typing", async ({ roomTitle, user, isTyping }) => {
                 console.log(roomTitle, user)
                 if (!roomTitle || !user.name) {
@@ -107,6 +120,24 @@ const sendLocationHandler = async ({ longitude, latitude }, roomTitle, senderId)
     await namespaceModel.updateOne({ "rooms.title": roomTitle }, {
         $push: { "rooms.$.locations": locationData }
     });
+};
+
+const sendFileHandler = async (file, filename, roomTitle, senderId) => {
+    const uploadedMediaName = uploadFile(file, filename, "medias");
+    if (!uploadedMediaName) {
+        return;
+    }
+
+    const uploadedMediaData = {
+        path: `medias/${uploadedMediaName}`,
+        sender: senderId
+    };
+
+    await namespaceModel.findOneAndUpdate({ "rooms.title": roomTitle }, {
+        $push: { "rooms.$.medias": uploadedMediaData }
+    });
+
+    return uploadedMediaName;
 };
 
 module.exports = {

@@ -6,7 +6,9 @@ import {
   getMessage,
   detectIsTyping,
   sendLocation,
-  getLocation
+  getLocation,
+  sendFile,
+  getFile
 } from "../../utils/funcs.js";
 
 window.addEventListener("load", async () => {
@@ -28,6 +30,8 @@ window.addEventListener("load", async () => {
       detectIsTyping();
       sendLocation();
       getLocation();
+      sendFile();
+      getFile();
     });
 
   });

@@ -286,3 +286,27 @@ export const initMap = (id, x, y) => {
       '&copy; <a href="http://www.openstreetmap.org/copyright">33</a>',
   }).addTo(map);
 };
+
+export const sendFile = () => {
+  const fileIcon = document.querySelector("#file-input");
+
+  fileIcon.addEventListener("change", event => {
+    const fileData = event.target.files[0];
+    if (!fileData) {
+      return;
+    }
+    
+    namespaceSocket.emit("send-media", {
+      file: fileData,
+      filename: fileData.name,
+      senderId: user._id,
+      roomTitle: activeRoomTitle,
+    });
+  });
+};
+
+export const getFile = () => {
+  namespaceSocket.on("room-media", (data) => {
+    console.log("New Media ->", data);
+  });
+};

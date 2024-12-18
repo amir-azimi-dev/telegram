@@ -795,6 +795,10 @@
   margin-right: 3rem;
 }
 
+#file-input {
+  display: none;
+}
+
 @media screen and (max-width: 1400px) {
   .chat {
     padding: 7.1rem 3rem 8rem;
