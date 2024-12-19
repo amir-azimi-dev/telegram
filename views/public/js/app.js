@@ -1,68 +1,18 @@
 import {
-  authorizeUser,
-  showActiveNamespace,
-  showNamespaces,
-  sendMessageHandler,
-  getMessage,
-  detectIsTyping,
-  sendLocation,
-  getLocation,
-  sendFile,
-  getFile
+  defineSocket,
+  showNamespaces
 } from "../../utils/funcs.js";
 
-window.addEventListener("load", async () => {
-  const userInfo = await getUserInfo();
-  if (!userInfo) {
-    return location.replace("./auth.html");
-  }
 
-  authorizeUser(userInfo);
-
+window.addEventListener("load", () => {
   const socket = io("http://localhost:3000");
 
-  socket.on("connect", () => {
-    socket.on("namespaces", namespaces => {
-      showNamespaces(namespaces, socket);
-      showActiveNamespace(namespaces);
-      sendMessageHandler();
-      getMessage();
-      detectIsTyping();
-      sendLocation();
-      getLocation();
-      sendFile();
-      getFile();
-    });
-
-  });
+  handleSocketIo(socket);
 });
 
-const getUserInfo = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return false;
-  }
+const handleSocketIo = socket => {
+  defineSocket(socket);
+  socket.on("connect", () => console.log("socket connected successfully ... "));
+  socket.on("namespaces", showNamespaces);
 
-  const response = await fetch("http://localhost:3000/api/v1/auth", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) {
-    return false;
-  }
-
-  const data = await response.json();
-  return data.payload;
-};
-
-const scrollDownButton = document.querySelector(".chat__content-bottom-bar-right>span");
-scrollDownButton.addEventListener("click", () => {
-  const chatsContent = document.querySelector(".chat__content--active");
-  chatsContent.scrollTo({
-    behavior: "smooth",
-    left: 0,
-    top: chatsContent.scrollHeight
-  });
-});
+}
