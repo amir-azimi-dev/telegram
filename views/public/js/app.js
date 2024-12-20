@@ -1,6 +1,6 @@
 import {
   defineSocket,
-  showNamespaces
+  showNamespaces,
 } from "../../utils/funcs.js";
 
 
@@ -14,5 +14,4 @@ const handleSocketIo = socket => {
   defineSocket(socket);
   socket.on("connect", () => console.log("socket connected successfully ... "));
   socket.on("namespaces", showNamespaces);
-
 }
