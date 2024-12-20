@@ -1,8 +1,13 @@
+let user = null;
 let socket = null;
 let activeNamespaceSocket = null;
 
 const querySelector = query => document.querySelector(query);
 const querySelectorAll = query => document.querySelectorAll(query);
+
+const authorizeUser = userInfo => {
+  user = userInfo;
+};
 
 const defineSocket = socketIO => {
   socket = socketIO
@@ -147,7 +152,7 @@ const showActiveRoomChats = roomInfo => {
 const getMessageTemplates = messages => {
   const messageTemplateArray = messages.map(message => {
     let messageTemplate = null;
-    if (false && message.sender === user._id) {
+    if (message.sender === user._id) {
       messageTemplate = `
           <div class="chat__content-receiver-wrapper chat__content-wrapper">
             <div class="chat__content-receiver">
@@ -175,6 +180,7 @@ const getMessageTemplates = messages => {
 };
 
 export {
+  authorizeUser,
   defineSocket,
   showNamespaces
 };
