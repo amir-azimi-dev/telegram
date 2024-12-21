@@ -73,7 +73,6 @@ const getNamespaceRooms = async io => {
             });
 
             client.on("typing", async ({ roomTitle, user, isTyping }) => {
-                console.log(roomTitle, user)
                 if (!roomTitle || !user.name) {
                     return;
                 }

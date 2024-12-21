@@ -383,9 +383,11 @@
 .chat__content-sender {
   background-color: var(--secondary-color);
 }
+
 .bubble-tail::before {
   content: '';
 }
+
 .chat__content-sender,
 .chat__content-receiver {
   width: fit-content;
@@ -395,9 +397,11 @@
   color: var(--white-color);
   position: relative;
 }
+
 .chat__content-sender {
   margin-right: 4rem;
 }
+
 .chat__content-receiver {
   margin-left: 4rem;
 }
@@ -471,11 +475,13 @@
   justify-content: center;
   cursor: pointer;
 }
+
 .laugh-icon::before {
   content: '\E9EA';
   color: var(--gray-color);
   font-family: icons !important;
 }
+
 .file-icon::before {
   content: '\E910';
   color: var(--gray-color);
@@ -551,6 +557,7 @@
   border-radius: 0.8rem;
   align-items: center;
 }
+
 .context-menu__item.danger {
   color: #ff595a;
 }
@@ -558,6 +565,7 @@
 .context-menu__item:hover {
   background-color: rgba(170, 170, 170, 0.067);
 }
+
 .context-menu__item.danger:hover {
   background-color: #ff595919;
 }
@@ -623,16 +631,19 @@
   visibility: visible;
   opacity: 1;
 }
+
 .setting-menu--active {
   visibility: visible;
   opacity: 1;
   z-index: 5;
 }
+
 .setting-menu {
   min-width: 260px;
   padding-top: 0.2rem;
   background-color: rgb(40 40 40 / 75%);
 }
+
 .btn-menu-footer {
   /* height: 2.5rem; */
   display: flex;
@@ -646,6 +657,7 @@
   padding-bottom: 1.5rem;
   padding-top: 1.5rem;
 }
+
 .setting-menu .contact-menu__item {
   margin: 0 0.3rem;
 }
@@ -684,9 +696,7 @@
   position: absolute;
 }
 
-.checkbox-field-toggle
-  [type='checkbox']:checked:not(.is-fake-disabled)
-  + .checkbox-toggle {
+.checkbox-field-toggle [type='checkbox']:checked:not(.is-fake-disabled)+.checkbox-toggle {
   background-color: var(--primary-color);
 }
 
@@ -722,6 +732,7 @@
   width: 54px;
   line-height: 54px;
 }
+
 .btn-menu-toggle {
   position: relative;
   overflow: visible !important;
@@ -729,6 +740,7 @@
   cursor: pointer !important;
   pointer-events: all !important;
 }
+
 .btn-corner {
   background-color: var(--primary-color);
   text-align: center;
@@ -743,6 +755,7 @@
   justify-content: center;
   padding: 0 !important;
 }
+
 .sidebar-bottom-btn {
   position: sticky !important;
   z-index: 1;
@@ -760,7 +773,10 @@
   position: relative;
   background-color: var(--secondary-color);
   border-radius: 16px;
+  display: flex;
+  overflow: hidden;
 }
+
 .sidebar-close-button {
   width: 4rem;
   height: 4rem;
@@ -773,13 +789,16 @@
 .sidebar__contact-link--selected {
   background-color: var(--primary-color);
 }
+
 .sidebar__contact-link--selected .sidebar__counter {
   color: var(--primary-color) !important;
   background-color: white !important;
 }
+
 .sidebar__contact-link--selected:hover {
   background-color: var(--primary-color);
 }
+
 .sidebar__contact-link--selected .sidebar__contact-sender-text {
   color: #ffffffc9 !important;
 }
@@ -787,6 +806,7 @@
 .sidebar__contact .sidebar__counter {
   font-size: 14px;
 }
+
 .sidebar__contact .sidebar__counter-active {
   background-color: var(--primary-color);
 }
@@ -799,18 +819,45 @@
   display: none;
 }
 
+/* leaflet map */
+.map-receiver {
+  height: 230px;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+  margin-left: -4px;
+  border-radius: 8px;
+}
+
+.map-sender {
+  height: 230px;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+  margin-left: -4px;
+  border-radius: 8px;
+}
+
+.chat__content-map {
+  width: 100%;
+}
+/* leaflet map close */
+
 @media screen and (max-width: 1400px) {
   .chat {
     padding: 7.1rem 3rem 8rem;
   }
+
   .chat__content-bottom-bar {
     padding: 0px 3rem;
     padding-right: 10rem;
   }
+
   .chat__content-bottom-bar-right-icon {
     right: 0;
   }
 }
+
 @media screen and (max-width: 1033px) {
   .costom-col-3 {
     position: fixed;
@@ -818,36 +865,46 @@
     right: 0;
     transition: 0.3s;
   }
+
   .sideBar-hide {
     transform: translateX(-420px);
   }
+
   .container-hide {
     transform: translateX(420px);
   }
+
   .sidebar-close-button {
     display: flex;
   }
 }
+
 @media screen and (max-width: 560px) {
   .chat {
     padding: 7.1rem 0.8rem 8rem;
   }
+
   .chat__content-bottom-bar {
     padding: 0px 0.8rem;
     padding-right: 7.5rem;
   }
+
   .chat__content-bottom-bar-right-icon {
     right: -18px;
   }
+
   .chat__content-sender {
     margin-right: 1rem;
   }
+
   .chat__content-receiver {
     margin-left: 1rem;
   }
+
   .chat__header-search {
     display: none;
   }
+
   .sidebar-bottom-btn {
     margin: 20px;
   }

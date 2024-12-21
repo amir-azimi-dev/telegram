@@ -3,7 +3,11 @@ import {
   defineSocket,
   showNamespaces,
   sendMessageHandler,
-  showMessageHandler
+  showMessageHandler,
+  sendIsTypingStatusHandler,
+  showTypingStatusHandler,
+  sendLocationHandler,
+  showLocationHandler
 } from "../../utils/funcs.js";
 
 
@@ -27,6 +31,10 @@ const handleSocketIo = socket => {
     showNamespaces(namespaceData);
     sendMessageHandler();
     showMessageHandler();
+    sendIsTypingStatusHandler();
+    showTypingStatusHandler();
+    sendLocationHandler();
+    showLocationHandler();
   });
 }
 
