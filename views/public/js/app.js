@@ -2,6 +2,8 @@ import {
   authorizeUser,
   defineSocket,
   showNamespaces,
+  sendMessageHandler,
+  showMessageHandler
 } from "../../utils/funcs.js";
 
 
@@ -10,7 +12,7 @@ window.addEventListener("load", async () => {
   if (!userInfo) {
     return location.replace("./auth.html");
   }
-  
+
   authorizeUser(userInfo);
 
   const socket = io("http://localhost:3000");
@@ -21,7 +23,11 @@ window.addEventListener("load", async () => {
 const handleSocketIo = socket => {
   defineSocket(socket);
   socket.on("connect", () => console.log("socket connected successfully ... "));
-  socket.on("namespaces", showNamespaces);
+  socket.on("namespaces", namespaceData => {
+    showNamespaces(namespaceData);
+    sendMessageHandler();
+    showMessageHandler();
+  });
 }
 
 const authenticate = async () => {

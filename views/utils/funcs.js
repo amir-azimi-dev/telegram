@@ -1,6 +1,7 @@
 let user = null;
 let socket = null;
 let activeNamespaceSocket = null;
+let activeRoomTitle = null;
 
 const querySelector = query => document.querySelector(query);
 const querySelectorAll = query => document.querySelectorAll(query);
@@ -109,8 +110,8 @@ const selectRoomHandler = () => {
     room.addEventListener("click", event => {
       event.preventDefault();
 
-      const roomTitle = room.dataset.roomTitle;
-      activeNamespaceSocket.emit("join", roomTitle);
+      activeRoomTitle = room.dataset.roomTitle;
+      activeNamespaceSocket.emit("join", activeRoomTitle);
 
       const prevActiveRoom = querySelector(".sidebar__contact-link--selected");
       prevActiveRoom && prevActiveRoom.classList.remove("sidebar__contact-link--selected");
@@ -143,10 +144,13 @@ const showActiveRoomChats = roomInfo => {
   const chatContent = document.querySelector(".chat__content");
   chatContent.classList.add("chat__content--active");
 
-  const chatsContainer = document.querySelector(".chat__content-main");
-  chatsContainer.innerHTML = "";
+  const chatContainer = document.querySelector(".chat__content-main");
+  chatContainer.innerHTML = "";
   const messageTemplates = getMessageTemplates(roomInfo.messages);
-  chatsContainer.insertAdjacentHTML("beforeend", messageTemplates)
+  chatContainer.insertAdjacentHTML("beforeend", messageTemplates);
+
+  const activeChatContainer = document.querySelector(".chat__content--active");
+  activeChatContainer.addEventListener("click", scrollToChatFloor);
 };
 
 const getMessageTemplates = messages => {
@@ -179,8 +183,52 @@ const getMessageTemplates = messages => {
   return messageTemplates;
 };
 
+const sendMessageHandler = () => {
+  const chatInput = querySelector(".chat__content-bottom-bar-input");
+  chatInput.addEventListener("keydown", sendMessage);
+};
+
+const sendMessage = event => {
+  const chatInput = event.target;
+  const message = chatInput.value?.trim();
+  if (event.key !== "Enter" || !message) {
+    return;
+  }
+
+  const messageData = {
+    message,
+    roomTitle: activeRoomTitle,
+    senderId: user._id
+  };
+  activeNamespaceSocket.emit("send-message", messageData);
+  chatInput.value = "";
+};
+
+const showMessageHandler = () => {
+  activeNamespaceSocket.on("room-message", showMessage);
+};
+
+const showMessage = message => {
+  const messageTemplate = getMessageTemplates([message]);
+  const chatContainer = document.querySelector(".chat__content-main");
+  chatContainer.insertAdjacentHTML("beforeend", messageTemplate);
+  scrollToChatFloor();
+};
+
+const scrollToChatFloor = () => {
+  const chatContainer = document.querySelector(".chat__content--active");
+
+  chatContainer.scrollTo({
+    behavior: "smooth",
+    left: 0,
+    top: chatContainer.scrollHeight
+  });
+};
+
 export {
   authorizeUser,
   defineSocket,
-  showNamespaces
+  showNamespaces,
+  sendMessageHandler,
+  showMessageHandler,
 };
