@@ -235,6 +235,7 @@ const sendMessage = event => {
     roomTitle: activeRoomTitle,
     senderId: user._id
   };
+  
   activeNamespaceSocket.emit("send-message", messageData);
   chatInput.value = "";
 };
@@ -331,8 +332,15 @@ const showLocationHandler = () => {
   activeNamespaceSocket.on("room-location", showLocation);
 };
 
-const showLocation = data => {
-  console.log(data);
+const showLocation = locationData => {
+  const manipulatedLocationData = {
+    longitude: locationData.location.longitude,
+    latitude: locationData.location.latitude,
+    sender: locationData.sender,
+  };
+
+  renderMaps([manipulatedLocationData]);
+  scrollToChatFloor();
 };
 
 const initMap = (id, x, y) => {
