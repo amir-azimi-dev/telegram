@@ -235,7 +235,7 @@ const sendMessage = event => {
     roomTitle: activeRoomTitle,
     senderId: user._id
   };
-  
+
   activeNamespaceSocket.emit("send-message", messageData);
   chatInput.value = "";
 };
@@ -361,6 +361,35 @@ const initMap = (id, x, y) => {
   }).addTo(map);
 };
 
+const sendMediaHandler = () => {
+  const mediaInput = querySelector("#file-input");
+  mediaInput.addEventListener("change", sendMedia);
+};
+
+const sendMedia = event => {
+  const fileInfo = event.target.files[0];
+  if (!fileInfo) {
+    return;
+  }
+
+  const fileData = {
+    senderId: user._id,
+    file: fileInfo,
+    filename: fileInfo.name,
+    roomTitle: activeRoomTitle
+  };
+
+  activeNamespaceSocket.emit("send-media", fileData);
+};
+
+const showMediaHandler = fileData => {
+  activeNamespaceSocket.on("room-media", showMedia);
+};
+
+const showMedia = mediaData => {
+  console.log(mediaData);
+};
+
 export {
   authorizeUser,
   defineSocket,
@@ -370,5 +399,7 @@ export {
   sendIsTypingStatusHandler,
   showTypingStatusHandler,
   sendLocationHandler,
-  showLocationHandler
+  showLocationHandler,
+  sendMediaHandler,
+  showMediaHandler
 };

@@ -7,7 +7,9 @@ import {
   sendIsTypingStatusHandler,
   showTypingStatusHandler,
   sendLocationHandler,
-  showLocationHandler
+  showLocationHandler,
+  sendMediaHandler,
+  showMediaHandler
 } from "../../utils/funcs.js";
 
 
@@ -35,6 +37,8 @@ const handleSocketIo = socket => {
     showTypingStatusHandler();
     sendLocationHandler();
     showLocationHandler();
+    sendMediaHandler();
+    showMediaHandler();
   });
 }
 
