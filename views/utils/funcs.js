@@ -41,6 +41,7 @@ const showNamespaces = namespaces => {
 };
 
 const getNamespaceRooms = namespaceHref => {
+  activeNamespaceSocket && activeNamespaceSocket.close();
   activeNamespaceSocket = io(`http://localhost:3000${namespaceHref}`);
   activeNamespaceSocket.on("connect", () => console.log("namespace socket connected ..."))
   activeNamespaceSocket.on("namespaceRooms", rooms => showActiveNamespaceRooms(rooms))
